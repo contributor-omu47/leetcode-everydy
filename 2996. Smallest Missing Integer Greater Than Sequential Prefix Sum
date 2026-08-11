@@ -1,0 +1,61 @@
+# Problem Solving Note: LeetCode 2996 - Smallest Missing Integer Greater Than Sequential Prefix Sum
+https://leetcode.com/problems/smallest-missing-integer-greater-than-sequential-prefix-sum/description/?envType=daily-question&envId=2026-08-11
+## 🧠 Thought Process & Approach
+
+When facing a problem that combines multiple distinct requirements, the best strategy is to break it down into smaller, manageable sub-problems. Looking at the problem statement, we can divide it into two clear phases:
+
+1. **Phase 1:** Find the sum of the longest sequential prefix.
+2. **Phase 2:** Find the smallest missing integer greater than or equal to that sum.
+
+---
+
+### Step 1: Deconstruct Phase 1 (The Longest Sequential Prefix)
+
+* **What does "sequential" mean?** 
+  The problem defines a sequential prefix as a subarray from index `0` to `i` where every subsequent element equals the previous element plus one ($nums[j] = nums[j-1] + 1$).
+* **How to implement this?** 
+  * Start with an initial `prefix_sum` equal to `nums[0]`.
+  * Iterate through the array starting from index `1`.
+  * Check the condition: `nums[i] == nums[i - 1] + 1`.
+  * If the condition holds, add `nums[i]` to `prefix_sum`.
+  * If the condition **fails**, the sequential streak is broken. We immediately `break` out of the loop because any elements further down cannot be part of the initial prefix.
+
+---
+
+### Step 2: Deconstruct Phase 2 (The Smallest Missing Integer)
+
+* **What are we looking for?** 
+  We need the smallest integer $x$ such that:
+  1. $x \ge$ `prefix_sum`
+  2. $x$ is **not** present in the original `nums` array.
+* **How to optimize lookups?** 
+  * Checking existence using a standard array search inside a loop would result in an $O(N^2)$ time complexity.
+  * Instead, we can store all elements of `nums` in a **Hash Set** (`set(nums)`). This allows for $O(1)$ average time complexity lookups.
+* **How to find the missing number?**
+  * Use a `while` loop starting at `prefix_sum`.
+  * Check if `prefix_sum` exists in the hash set.
+  * If it does, increment `prefix_sum` by $1$ and check again.
+  * The moment we find a value **not** in the set, the loop stops, and that value is our final answer.
+
+---
+
+### 💻 Final Code Implementation (Python 3)
+
+```python
+class Solution:
+    def missingInteger(self, nums: list[int]) -> int:
+        nums_set = set(nums)
+        prefix_sum = nums[0]
+        
+        # Step 1: Find longest sequential prefix sum
+        for i in range(1, len(nums)):
+            if nums[i] == nums[i - 1] + 1:
+                prefix_sum += nums[i]
+            else:
+                break
+                
+        # Step 2: Find the smallest missing integer >= prefix_sum
+        while prefix_sum in nums_set:
+            prefix_sum += 1
+            
+        return prefix_sum
