@@ -1,47 +1,55 @@
-# Problem Solving Note: LeetCode 2996 - Smallest Missing Integer Greater Than Sequential Prefix Sum
+Problem Solving Note: LeetCode 2996 - Smallest Missing Integer Greater Than Sequential Prefix Sum
 https://leetcode.com/problems/smallest-missing-integer-greater-than-sequential-prefix-sum/description/?envType=daily-question&envId=2026-08-11
-## 🧠 Thought Process & Approach
 
+Thought Process and Approach
 When facing a problem that combines multiple distinct requirements, the best strategy is to break it down into smaller, manageable sub-problems. Looking at the problem statement, we can divide it into two clear phases:
 
-1. **Phase 1:** Find the sum of the longest sequential prefix.
-2. **Phase 2:** Find the smallest missing integer greater than or equal to that sum.
+Phase 1: Find the sum of the longest sequential prefix.
 
----
+Phase 2: Find the smallest missing integer greater than or equal to that sum.
 
-### Step 1: Deconstruct Phase 1 (The Longest Sequential Prefix)
+Step 1: Deconstruct Phase 1 (The Longest Sequential Prefix)
+What does sequential mean?
+The problem defines a sequential prefix as a subarray from index 0 to i where every subsequent element equals the previous element plus one (nums[j] = nums[j-1] + 1).
 
-* **What does "sequential" mean?** 
-  The problem defines a sequential prefix as a subarray from index `0` to `i` where every subsequent element equals the previous element plus one ($nums[j] = nums[j-1] + 1$).
-* **How to implement this?** 
-  * Start with an initial `prefix_sum` equal to `nums[0]`.
-  * Iterate through the array starting from index `1`.
-  * Check the condition: `nums[i] == nums[i - 1] + 1`.
-  * If the condition holds, add `nums[i]` to `prefix_sum`.
-  * If the condition **fails**, the sequential streak is broken. We immediately `break` out of the loop because any elements further down cannot be part of the initial prefix.
+How to implement this?
 
----
+Start with an initial prefix_sum equal to nums[0].
 
-### Step 2: Deconstruct Phase 2 (The Smallest Missing Integer)
+Iterate through the array starting from index 1.
 
-* **What are we looking for?** 
-  We need the smallest integer $x$ such that:
-  1. $x \ge$ `prefix_sum`
-  2. $x$ is **not** present in the original `nums` array.
-* **How to optimize lookups?** 
-  * Checking existence using a standard array search inside a loop would result in an $O(N^2)$ time complexity.
-  * Instead, we can store all elements of `nums` in a **Hash Set** (`set(nums)`). This allows for $O(1)$ average time complexity lookups.
-* **How to find the missing number?**
-  * Use a `while` loop starting at `prefix_sum`.
-  * Check if `prefix_sum` exists in the hash set.
-  * If it does, increment `prefix_sum` by $1$ and check again.
-  * The moment we find a value **not** in the set, the loop stops, and that value is our final answer.
+Check the condition: nums[i] == nums[i - 1] + 1.
 
----
+If the condition holds, add nums[i] to prefix_sum.
 
-### 💻 Final Code Implementation (Python 3)
+If the condition fails, the sequential streak is broken. We immediately break out of the loop because any elements further down cannot be part of the initial prefix.
 
-```python
+Step 2: Deconstruct Phase 2 (The Smallest Missing Integer)
+What are we looking for?
+We need the smallest integer x such that:
+
+x >= prefix_sum
+
+x is not present in the original nums array.
+
+How to optimize lookups?
+
+Checking existence using a standard array search inside a loop would result in O(N^2) time complexity.
+
+Instead, we can store all elements of nums in a Hash Set (set(nums)). This allows for O(1) average time complexity lookups.
+
+How to find the missing number?
+
+Use a while loop starting at prefix_sum.
+
+Check if prefix_sum exists in the hash set.
+
+If it does, increment prefix_sum by 1 and check again.
+
+The moment we find a value not in the set, the loop stops, and that value is our final answer.
+
+Final Code Implementation (Python 3)
+Python
 class Solution:
     def missingInteger(self, nums: list[int]) -> int:
         nums_set = set(nums)
@@ -59,4 +67,19 @@ class Solution:
             prefix_sum += 1
             
         return prefix_sum
-1. Time Complexity: $\mathcal{O}(N)$Building the Hash Set: Converting the nums array into a set takes $\mathcal{O}(N)$ time, where $N$ is the number of elements in nums, because each element is inserted and hashed.Finding the Prefix Sum: We loop through the array at most once (from index 1 to N - 1), which takes $\mathcal{O}(N)$ time.Finding the Missing Integer: The while loop checks for the presence of prefix_sum in the hash set. Hash set lookups take $\mathcal{O}(1)$ average time. In the worst-case scenario, the number of lookups is bounded by the number of elements or values present, resulting in at most $\mathcal{O}(N)$ operations.Overall Time Complexity: $\mathcal{O}(N)$2. Space Complexity: $\mathcal{O}(N)$Hash Set Storage: We store all $N$ elements of the nums array inside an unordered_set (C++) or set (Python) to achieve $\mathcal{O}(1)$ lookups. This requires $\mathcal{O}(N)$ extra auxiliary space.Variables: The scalar variables like prefix_sum and loop indices take $\mathcal{O}(1)$ constant space.Overall Space Complexity: $\mathcal{O}(N)$
+Complexity Analysis
+1. Time Complexity: O(N)
+Building the Hash Set: Converting the nums array into a set takes O(N) time, where N is the number of elements in nums, because each element is inserted and hashed.
+
+Finding the Prefix Sum: We loop through the array at most once (from index 1 to N - 1), which takes O(N) time.
+
+Finding the Missing Integer: The while loop checks for the presence of prefix_sum in the hash set. Hash set lookups take O(1) average time. In the worst-case scenario, the number of lookups is bounded by the number of elements or values present, resulting in at most O(N) operations.
+
+Overall Time Complexity: O(N)
+
+2. Space Complexity: O(N)
+Hash Set Storage: We store all N elements of the nums array inside an unordered_set (C++) or set (Python) to achieve O(1) lookups. This requires O(N) extra auxiliary space.
+
+Variables: The scalar variables like prefix_sum and loop indices take O(1) constant space.
+
+Overall Space Complexity: O(N)
