@@ -1,0 +1,51 @@
+# LeetCode 2958: Length of Longest Subarray With at Most K Frequency
+
+Whenever a problem asks to find the "longest contiguous subarray" based on a specific condition, it's usually a massive hint to use the **Sliding Window** (or Two Pointers) pattern. That's exactly what works best here.
+
+### My Thought Process
+
+The goal is to find the longest stretch of numbers where no single number shows up more than `k` times. 
+
+To pull this off, we need a way to keep track of the frequencies of the numbers currently inside our "window". Since the problem states that the numbers in the array can be as large as `10^9`, we can't use a fixed-size array to count frequencies—it would cause an Out of Memory error. A Hash Map (or Dictionary in Python) is the perfect tool for the job.
+
+Here is how the sliding window plays out:
+1. **Expand:** We drag our `right` pointer across the array, adding each new number to our hash map and increasing its count.
+2. **Validate & Shrink:** The only time our window breaks the rules is if the number we *just added* pushes its frequency over `k`. When that happens, we have to shrink the window from the left. We inch our `left` pointer forward, decrementing the counts of the numbers we leave behind, until the frequency of our problem number drops back down to `k`.
+3. **Record:** As long as our window is valid, we calculate its size (`right - left + 1`) and update our maximum length.
+
+The coolest part about this logic is that we don't need to scan the entire hash map to check if the window is valid. We only ever need to check the frequency of the newly added number.
+
+### The Code (Python 3)
+
+```python
+class Solution:
+    def maxSubarrayLength(self, nums: list[int], k: int) -> int:
+        freq = {}
+        left = 0
+        max_length = 0
+        
+        for right in range(len(nums)):
+            # Add the current number to our window's frequency map
+            current_num = nums[right]
+            freq[current_num] = freq.get(current_num, 0) + 1
+            
+            # If we exceeded 'k', shrink the window from the left 
+            # until the current number's frequency is valid again
+            while freq[current_num] > k:
+                left_num = nums[left]
+                freq[left_num] -= 1
+                left += 1
+                
+            # Keep track of the largest valid window we've seen
+            max_length = max(max_length, right - left + 1)
+            
+        return max_length
+Complexity & Trade-offs
+Time Complexity: O(N)
+Even though there's a while loop nested inside a for loop, this runs in linear time. Why? Because both the left and right pointers only ever move forward. Every element in the array is added to the window exactly once and removed at most once.
+
+Space Complexity: O(N)
+In the worst-case scenario (like if every number in the array is unique), our hash map will end up storing an entry for every single element in the nums array.
+
+Pros and Cons of this approach:
+The biggest advantage here is speed—it solves the problem cleanly in a single pass without any redundant checks. It also handles sparse, massive numbers perfectly thanks to the hash map. The only real downside is the memory overhead; because we have to remember the exact count of every element in the window, we're locked into using O(N) extra space, which is pretty standard for this type of problem anyway.
