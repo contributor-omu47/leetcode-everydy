@@ -1,0 +1,107 @@
+Understanding the Bottleneck
+The core goal is to track the longest repeating substring while changing one character at a time. The naive approach—scanning the entire string after every single update—would take way too long and cause a Time Limit Exceeded error. Because we have up to 100,000 queries, we need a way to process these updates in logarithmic time.
+
+Choosing the Right Tool
+Whenever a problem involves updating single elements and querying properties of a range, a Segment Tree is the perfect fit. However, the real challenge is figuring out exactly what information each piece of the tree needs to hold.
+
+The Merging Problem
+If you just store the maximum repeating length of a left section and a right section, you don't have enough information to combine them. For instance, if the left section ends in "bb" and the right section starts with "bbb", you need to know that they merge to form a continuous "bbbbb".
+
+To make this work, every segment needs to track a few key details:
+
+The total size of the segment.
+
+The maximum repeating length anywhere inside it.
+
+The first character and its repeating length (the prefix).
+
+The last character and its repeating length (the suffix).
+
+Putting It Together
+When merging two halves, the new maximum length is either the left section's maximum, the right section's maximum, or the newly formed bridge in the middle (if the left suffix and right prefix characters match). The prefix and suffix naturally carry over from the outer edges, unless an entire half consists of just one repeating character, in which case it stretches across the boundary.
+
+By structuring the data this way, building the initial tree takes linear time, and each subsequent update only takes logarithmic time, allowing the solution to easily handle the massive constraints of the problem.
+
+
+from typing import List
+
+class Node:
+    def __init__(self, size=1):
+        self.size = size
+        self.max_len = 0
+        self.pref_len = 0
+        self.suff_len = 0
+        self.pref_char = ''
+        self.suff_char = ''
+
+class SegmentTree:
+    def __init__(self, s: str):
+        self.n = len(s)
+        self.tree = [Node() for _ in range(4 * self.n)]
+        self.build(s, 0, 0, self.n - 1)
+
+    def merge(self, left: Node, right: Node) -> Node:
+        parent = Node(left.size + right.size)
+        parent.pref_char = left.pref_char
+        parent.suff_char = right.suff_char
+        
+        # Calculate Prefix
+        parent.pref_len = left.pref_len
+        if left.pref_len == left.size and left.pref_char == right.pref_char:
+            parent.pref_len += right.pref_len
+            
+        # Calculate Suffix
+        parent.suff_len = right.suff_len
+        if right.suff_len == right.size and right.suff_char == left.suff_char:
+            parent.suff_len += left.suff_len
+            
+        # Calculate Max Length
+        parent.max_len = max(left.max_len, right.max_len)
+        if left.suff_char == right.pref_char:
+            parent.max_len = max(parent.max_len, left.suff_len + right.pref_len)
+            
+        return parent
+
+    def build(self, s: str, node: int, start: int, end: int):
+        if start == end:
+            char = s[start]
+            self.tree[node].max_len = 1
+            self.tree[node].pref_len = 1
+            self.tree[node].suff_len = 1
+            self.tree[node].pref_char = char
+            self.tree[node].suff_char = char
+            self.tree[node].size = 1
+            return
+        
+        mid = (start + end) // 2
+        self.build(s, 2 * node + 1, start, mid)
+        self.build(s, 2 * node + 2, mid + 1, end)
+        self.tree[node] = self.merge(self.tree[2 * node + 1], self.tree[2 * node + 2])
+
+    def update(self, node: int, start: int, end: int, idx: int, val: str):
+        # Leaf Node reached
+        if start == end:
+            self.tree[node].pref_char = val
+            self.tree[node].suff_char = val
+            # Lengths remain 1, size remains 1
+            return
+        
+        mid = (start + end) // 2
+        if start <= idx <= mid:
+            self.update(2 * node + 1, start, mid, idx, val)
+        else:
+            self.update(2 * node + 2, mid + 1, end, idx, val)
+            
+        self.tree[node] = self.merge(self.tree[2 * node + 1], self.tree[2 * node + 2])
+
+class Solution:
+    def longestRepeating(self, s: str, queryCharacters: str, queryIndices: List[int]) -> List[int]:
+        st = SegmentTree(s)
+        ans = []
+        
+        for c, idx in zip(queryCharacters, queryIndices):
+            st.update(0, 0, len(s) - 1, idx, c)
+            # The root node (0) always holds the maximum for the whole string
+            ans.append(st.tree[0].max_len)
+            
+        return ans
