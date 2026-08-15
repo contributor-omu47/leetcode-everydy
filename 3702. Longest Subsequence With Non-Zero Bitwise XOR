@@ -1,0 +1,7 @@
+Case 1 (Total XOR is non-zero): If the bitwise XOR of all elements in the array is already non-zero, then the longest subsequence is the entire array itself. The answer is the length of the array, n.
+
+Case 2 (Total XOR is zero, but there are non-zero elements): If the total XOR is 0, we just need to remove one non-zero element to make the remaining XOR non-zero. The longest subsequence will simply be the array minus that one element. The answer is n - 1.
+
+Case 3 (All elements are zero): If the array consists entirely of zeros, it's impossible to get a non-zero XOR, no matter what subsequence you pick. The answer is 0.
+
+Time Complexity: O(N) where N is the number of elements in nums. We only need a single pass through the array.Space Complexity: O(1) because we only use a couple of variables to keep track of the XOR sum and a boolean flag.
