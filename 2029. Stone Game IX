@@ -1,0 +1,25 @@
+If Alice starts with a Type 1 stone, the sequence of remaining stones played (ignoring Type 0s) must alternate to avoid hitting a multiple of 3:
+1, 1, 2, 1, 2, 1, 2, 1...
+Bob needs Type 1 stones, and Alice needs Type 2 stones.
+
+If Alice starts with a Type 2 stone, the sequence must be:
+2, 2, 1, 2, 1, 2, 1, 2...
+Bob needs Type 2 stones, and Alice needs Type 1 stones.
+
+Let c0, c1, and c2 be the counts of stones with remainder 0, 1, and 2.
+
+Case 1: The count of Type 0 stones (c0) is EVEN
+Because they are even, the Type 0 stones effectively cancel each other out. If Bob uses one to pass the turn, Alice can use another to pass it right back.
+
+Alice wins as long as she has at least one Type 1 stone and at least one Type 2 stone. She simply starts with the type that has the smaller count, forcing Bob to eventually run out of the stones he needs.
+
+Win Condition: c1 > 0 and c2 > 0
+
+Case 2: The count of Type 0 stones (c0) is ODD
+An odd number of Type 0 stones gives Bob an extra turn, which swaps the roles of who runs out of stones first.
+
+For Alice to survive Bob's extra turn and still win, she needs a significant advantage in the number of Type 1 or Type 2 stones. Specifically, the difference between c1 and c2 must be strictly greater than 2.
+
+Win Condition: abs(c1 - c2) > 2
+
+Complexity AnalysisTime Complexity: $\mathcal{O}(N)$, where $N$ is the number of stones. We only need to iterate through the array once to calculate the frequencies of the modulo values.Space Complexity: $\mathcal{O}(1)$. We only store three integers (c0, c1, c2), regardless of the size of the input array.
