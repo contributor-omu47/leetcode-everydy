@@ -1,0 +1,40 @@
+Stone Game V
+
+The Initial Approach: Standard Interval DP
+The problem asks us to find the optimal score by splitting a subarray into two parts, which is a classic Interval Dynamic Programming problem.
+
+The Strategy:
+We defined a memoized function dp(i, j) that returns the maximum score Alice can get from the subarray stoneValue[i...j]. Inside this state, we iterated through every possible split point k (where i <= k < j). We calculated the left_sum (from i to k) and right_sum (from k+1 to j) using a prefix sum array to keep the sum queries at O(1). Based on the game rules, we added the smaller sum to our score and recursively called the DP on the remaining half.
+
+Time & Space Complexity:
+Time: O(N^3) - There are O(N^2) subproblems (pairs of i and j), and for each subproblem, we loop through up to N possible split points k.
+Space: O(N^2) - Used by the recursion stack and the memoization cache.
+
+The Fault and Difficulty Faced
+While logically sound, the initial approach resulted in a Time Limit Exceeded (TLE) on LeetCode for test cases with large arrays containing identical elements (e.g., N = 500 and stoneValue = [1000000, 1000000, ...]).
+
+The Fault:
+The inner loop k does a massive amount of redundant work. When you have 500 elements, evaluating every single split point for every possible subarray combination pushes the operations well beyond acceptable limits, especially with Python's overhead.
+
+The Difficulty in Optimizing:
+To eliminate the inner O(N) loop, we had to recognize a hidden monotonic property. As the split point k moves from left to right, left_sum strictly increases and right_sum strictly decreases. Therefore, there is always a singular pivot point (mid) where the left side stops being strictly smaller than the right side.
+
+However, simply finding this pivot using Binary Search would still result in an O(N^2 log N) time complexity. To achieve true O(N^2), we needed a way to track the maximum possible score across an entire range of valid splits in O(1) time, without iterating through them.
+
+The Final Solution: Optimized Bottom-Up DP with Pivot Tracking
+To bring the time complexity down, we transition to a bottom-up Dynamic Programming approach utilizing a sliding pivot and auxiliary DP tables.
+
+The Optimization Strategy:
+Sliding Pivot: Instead of searching for the optimal split from scratch, we use a two-pointer approach. For a fixed start index i, as the end index j expands to the right, the pivot point mid (where left_sum >= right_sum) also only moves to the right. We just nudge it forward.
+Auxiliary Tables (max_l and max_r): We introduce two 2D arrays to cache the maximum cumulative scores of taking the left or right partitions.
+max_l[i][j] stores the best outcome if we are forced to take the left part of the array between i and j.
+max_r[i][j] stores the best outcome if we are forced to take the right part.
+
+By updating max_l and max_r dynamically as we build our dp table, we can instantly look up the best possible score for all valid split points before and after the mid pivot in O(1) time.
+
+Final Complexity Analysis
+Time Complexity: O(N^2)
+There are O(N^2) pairs of (i, j) to evaluate. Because the mid pointer only moves forward for a fixed i as j increases, the inner while loop runs at most N times across all iterations of j. Thus, the amortized cost per (i, j) state is O(1).
+
+Space Complexity: O(N^2)
+We store three 2D matrices of size N x N: the main dp table, max_l, and max_r, taking O(N^2) space. The prefix sum array takes O(N) space.
