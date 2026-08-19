@@ -1,0 +1,8 @@
+approch: 
+- Filtered out irrelevant seat reservations (seats 1 and 10).
+- Utilized bit manipulation (bitmasks) to track seat availability in seats 2 through 9 for each affected row.
+- Checked possible 4-seat combinations (Left, Right, Middle) using predefined binary masks.
+- Computed unreserved rows mathematically to bypass O(N) row traversal.
+Complexity
+- Time Complexity: O(M) where M is the number of reservations.
+- Space Complexity: O(M) to store the bitmasks of affected rows in a Hash Map.
