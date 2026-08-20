@@ -1,0 +1,28 @@
+
+
+The Core Idea
+
+The problem asks us to simulate exactly what is described. Because the array length is very small (up to 50 elements), we do not need to look for complex optimizations. We just need to follow the instructions step-by-step using two separate lists.
+
+ Step-by-Step Breakdown
+
+1. Initialization (The first two operations)
+The problem states that the first element goes to `arr1` and the second element goes to `arr2`.
+
+* Take the element at index `0` and place it in a new list called `arr1`.
+* Take the element at index `1` and place it in a new list called `arr2`.
+
+2. Iteration (Processing the rest of the array)
+Since we have already processed the first two elements, we start a loop from the third element (index `2`) and go all the way to the end of the `nums` array.
+
+**3. The Condition (Checking the last elements)**
+For every new number we look at during our loop, we need to decide where to put it. We do this by looking at the **last element** currently sitting in `arr1` and the **last element** currently sitting in `arr2`.
+
+* If the last element of `arr1` is **strictly greater** than the last element of `arr2`, we add the current number to the end of `arr1`.
+* Otherwise, we add the current number to the end of `arr2`.
+*(In Python, you can easily access the last element of an array using the index `[-1]`, and in C++, you use `.back()`)*.
+
+**4. Final Concatenation**
+Once the loop finishes processing all the numbers, `arr1` and `arr2` contain all the distributed elements. The problem asks for a single array where `arr1` is followed by `arr2`.
+
+* We simply attach `arr2` to the end of `arr1` (using `+` in Python or `.insert` in C++) and return that combined array as our final result.
