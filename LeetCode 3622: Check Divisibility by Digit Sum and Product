@@ -1,0 +1,67 @@
+================================================================================
+THOUGHT PROCESS & SOLUTION GUIDE: LEETCODE 3622
+Problem: Check Divisibility by Digit Sum and Product
+================================================================================
+
+1. UNDERSTAND THE OBJECTIVE
+--------------------------------------------------------------------------------
+Given a positive integer `n`:
+- Find the sum of all digits in `n`.
+- Find the product of all digits in `n`.
+- Add the sum and product together: total = (digit_sum + digit_product).
+- Determine whether `n` is divisible by this `total`.
+  - Return True if n % total == 0.
+  - Return False otherwise.
+
+
+2. STEP-BY-STEP BREAKDOWN
+--------------------------------------------------------------------------------
+Step A: Extract the Digits
+  - Convert `n` to a string or use repeated modulo/division (% 10, // 10).
+  - Collect individual digits: for n = 99 -> [9, 9].
+
+Step B: Compute the Aggregates
+  - Digit Sum: Add each digit (9 + 9 = 18).
+  - Digit Product: Multiply each digit starting from 1 (9 * 9 = 81).
+  - Combined Divisor: sum + product (18 + 81 = 99).
+
+Step C: Divisibility Check
+  - Check if remainder of n / total is 0: (99 % 99 == 0) -> True.
+
+
+3. EDGE CASES & CONSTRAINTS
+--------------------------------------------------------------------------------
+- Constraint: 1 <= n <= 10^6.
+- Division by Zero Check:
+  - Since n >= 1, the sum of digits is always >= 1.
+  - Even if a digit is 0 (which makes the product 0), the total will be at 
+    least 1 (from the digit sum).
+  - Therefore, `total` is strictly positive, eliminating division-by-zero risks.
+
+
+4. PYTHON IMPLEMENTATION
+--------------------------------------------------------------------------------
+class Solution:
+    def checkDivisibility(self, n: int) -> bool:
+        # Step 1: Extract digits
+        digits = [int(d) for d in str(n)]
+        
+        # Step 2: Calculate sum and product
+        digit_sum = sum(digits)
+        digit_product = 1
+        for d in digits:
+            digit_product *= d
+            
+        # Step 3: Check divisibility
+        total = digit_sum + digit_product
+        return n % total == 0
+
+
+5. COMPLEXITY ANALYSIS
+--------------------------------------------------------------------------------
+- Time Complexity: O(log10(n))
+  The number of digits in n is floor(log10(n)) + 1. Since n <= 10^6, there are 
+  at most 7 digits. Operations execute in constant bounded time.
+
+- Space Complexity: O(log10(n))
+  Storing the list of extracted digits requires minimal memory (at most 7 elements).
