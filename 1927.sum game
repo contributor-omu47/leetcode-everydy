@@ -1,0 +1,61 @@
+Bob wins if and only if the difference between the question marks on each side can exactly balance the current sum difference at an average contribution of 4.5 per question mark.
+Solution & Intuition
+ * Symmetry: If one side has more ? than the other by an odd count, Alice always wins because she gets the last move on that difference and can force an inequality.
+ * Pair Strategy: For every pair of ? on one side, Bob can always ensure the pair sums to 9 (if Alice picks x, Bob picks 9 - x). Thus, each pair of excess ? contributes an expected sum of 9, or an average of 4.5 per ?.
+ * Condition for Bob's Win:
+   
+If this condition does not hold, Alice wins.
+Python 3 Implementation
+class Solution:
+    def sumGame(self, num: str) -> bool:
+        n = len(num)
+        mid = n // 2
+        
+        left_sum = 0
+        left_q = 0
+        for ch in num[:mid]:
+            if ch == '?':
+                left_q += 1
+            else:
+                left_sum += int(ch)
+                
+        right_sum = 0
+        right_q = 0
+        for ch in num[mid:]:
+            if ch == '?':
+                right_q += 1
+            else:
+                right_sum += int(ch)
+                
+        # Bob wins only if the sums balance out with the ? difference
+        # Condition: (left_sum - right_sum) + (left_q - right_q) * 4.5 == 0
+        # Multiplied by 2 to avoid floating point issues:
+        return 2 * (left_sum - right_sum) != 9 * (right_q - left_q)
+
+ * Time Complexity: O(n)
+ * Space Complexity: O(1)
+Here is the generalized Pattern & Mental Model framework for competitive game theory problems on LeetCode:
+Step 1: Establish the Asymmetry of the Objective
+ * Target vs. Disruption: One player usually targets a single, exact state (Bob wants \text{Left} = \text{Right}), while the other wins with any other state (Alice wants \text{Left} \neq \text{Right}).
+ * Rule of Thumb: Disruption is inherently easier than hitting an exact target. Bob needs 100\% control over every single degree of freedom; Alice only needs to force a single unrecoverable divergence.
+Step 2: The "Mirroring" Pattern (Eliminating Symmetry)
+ * Whenever two independent resources can affect the game state equally, test if the second player can mirror the first.
+ * If Alice plays on the Left side, Bob can play the exact same digit on the Right side.
+ * Reduction:
+   
+Step 3: The "Complementary Pairing" Pattern (Controlling the Sum)
+ * When a bounded value [0, M] is chosen turn-by-turn by two players, the second player can always fix the sum of two turns to M using the strategy:
+   
+ * For digits in [0, 9], each 2-turn round adds exactly 9 points to the total.
+ * Over k excess question marks (k/2 rounds), Bob’s controllable contribution is rigidly fixed to:
+   
+Step 4: The "Range & Extremes" Boundary Pattern
+Consider what happens if Bob's fixed target isn't met:
+ * Possible Range of k turns: [0, 9k]
+ * Expected Controllable Value: 4.5k
+ * If the required sum S > 4.5k, Alice plays greedily toward the minimum (0) on every turn, dragging the total sum below what Bob can rescue.
+ * If S < 4.5k, Alice plays greedily toward the maximum (9) on every turn, pushing the total above Bob’s reach.
+ * Conclusion: The window of equality is razor-thin. There is only one exact integer point where Bob can neutralize Alice’s greedy pulls.
+Step 5: Parity of Turns (The Last Move Advantage)
+ * Odd remaining moves: Alice makes the final choice. Since Alice picks from [0, 9], Bob cannot react. Alice simply avoids the single winning digit for Bob.
+ * Even remaining moves: Bob makes the final choice in every sub-round, giving him the chance to play complementarily.
