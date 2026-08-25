@@ -1,0 +1,16 @@
+1. Understand the goal:
+   You need to find the smallest number from the sequence (k, 2k, 3k, 4k, ...) that is not present in the given list of numbers.
+ 2. Notice the order:
+   Because you want the *smallest* missing multiple, the best strategy is to check the multiples in increasing order: start at k, then 2k, then 3k, and stop as soon as you find one that is missing.
+ 3. Identify the bottleneck:
+   If you search the whole array nums every time you check a multiple, it becomes slow. To make checks instant, put all numbers from nums into a Hash Set first.
+**The Algorithmic Pattern**
+Pattern: **Hash Set Lookup + Simulation**
+ * Step 1: Put all elements of nums into a set. Looking up any number in a set takes O(1) time.
+ * Step 2: Start a variable at k.
+ * Step 3: Check if this variable exists in the set.
+   * If it exists, add k to it and check again.
+   * If it does not exist, you found your answer. Return it immediately.
+**Complexity**
+ * Time Complexity: O(N) — Inserting elements into the set takes linear time, and the loop runs at most (N + 1) times.
+ * Space Complexity: O(N) — Extra memory used to store the set.
