@@ -1,0 +1,47 @@
+To solve this problem, group connected elements whose values differ by at most limit and reassign their sorted values back to their original positions in order.
+Python 3 Solution
+from collections import deque
+
+class Solution:
+    def lexicographicallySmallestArray(self, nums: list[int], limit: int) -> list[int]:
+        sorted_nums = sorted(nums)
+        
+        # Maps an element to its group ID
+        num_to_group = {}
+        # Stores the sorted elements for each group
+        group_to_list = []
+        
+        # Group adjacent numbers if their difference <= limit
+        for num in sorted_nums:
+            if not group_to_list or num - group_to_list[-1][-1] > limit:
+                group_to_list.append(deque())
+            
+            group_to_list[-1].append(num)
+            num_to_group[num] = len(group_to_list) - 1
+            
+        # Reconstruct the result array
+        res = []
+        for num in nums:
+            group_id = num_to_group[num]
+            res.append(group_to_list[group_id].popleft())
+            
+        return res
+
+Complexity
+ * Time Complexity: O(N \log N) due to sorting nums.
+ * Space Complexity: O(N) for storing group queues and mapping dictionaries.
+Pattern Name: Sorting + Connected Components / Grouping (Disjoint Set via Sorting)
+Core Algorithmic Idea:
+ * Transitive Swapping: If element A can swap with B (\vert{}A - B\vert{} \le \text{limit}), and B can swap with C (\vert{}B - C\vert{} \le \text{limit}), then A can also swap with C via intermediate steps. Any set of mutually reachable elements forms an independent connected component.
+ * Component-Wise Sorting: Within any connected component, elements can be rearranged in any arbitrary order across their original index positions. To make the array lexicographically smallest, smaller values must be placed at earlier indices occupied by that component.
+ * Adjacency via Sorted Order: When elements are sorted by value, adjacent numbers are closest in magnitude. Thus, testing if (sorted[i] - sorted[i-1] \le \text{limit}) is sufficient to split the entire array into contiguous disjoint groups.
+General Step-by-Step Template:
+ * Sort & Form Groups:
+   * Create a sorted copy of the elements.
+   * Iterate through the sorted array; start a new group whenever the difference between consecutive elements exceeds limit.
+ * Track Indices & Values:
+   * Associate each element with its component group ID.
+   * Maintain the sorted elements of each group in a FIFO queue (deque).
+ * Reconstruct:
+   * Iterate through the original array.
+   * For each position, look up the element's group and pop the smallest remaining element (popleft()) from that group's queue.
