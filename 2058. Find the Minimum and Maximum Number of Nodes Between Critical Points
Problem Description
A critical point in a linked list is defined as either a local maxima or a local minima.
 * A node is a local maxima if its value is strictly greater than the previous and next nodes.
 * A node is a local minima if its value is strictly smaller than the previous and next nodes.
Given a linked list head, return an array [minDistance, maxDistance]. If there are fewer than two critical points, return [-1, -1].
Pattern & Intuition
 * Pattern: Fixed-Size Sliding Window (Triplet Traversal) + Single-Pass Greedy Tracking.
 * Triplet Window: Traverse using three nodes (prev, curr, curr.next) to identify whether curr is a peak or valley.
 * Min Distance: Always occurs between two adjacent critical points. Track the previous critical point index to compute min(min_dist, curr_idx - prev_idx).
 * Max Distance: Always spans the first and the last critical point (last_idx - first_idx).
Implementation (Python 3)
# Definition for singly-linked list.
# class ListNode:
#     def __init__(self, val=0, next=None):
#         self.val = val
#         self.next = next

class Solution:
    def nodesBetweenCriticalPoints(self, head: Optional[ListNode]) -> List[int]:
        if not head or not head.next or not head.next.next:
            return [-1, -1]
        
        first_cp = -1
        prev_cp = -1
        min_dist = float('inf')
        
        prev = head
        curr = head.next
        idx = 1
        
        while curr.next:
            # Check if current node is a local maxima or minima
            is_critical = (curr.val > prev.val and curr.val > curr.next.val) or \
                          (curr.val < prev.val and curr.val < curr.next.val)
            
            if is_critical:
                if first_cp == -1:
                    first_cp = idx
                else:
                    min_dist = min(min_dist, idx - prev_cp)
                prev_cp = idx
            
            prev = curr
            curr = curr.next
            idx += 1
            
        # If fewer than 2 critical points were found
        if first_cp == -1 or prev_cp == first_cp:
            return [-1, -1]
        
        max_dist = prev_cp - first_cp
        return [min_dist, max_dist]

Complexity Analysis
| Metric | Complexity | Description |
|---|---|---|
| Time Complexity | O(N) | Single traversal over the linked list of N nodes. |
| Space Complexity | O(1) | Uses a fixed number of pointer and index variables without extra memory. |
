@@ -1,0 +1,59 @@
+2058. Find the Minimum and Maximum Number of Nodes Between Critical Points
+Problem Description
+A critical point in a linked list is defined as either a local maxima or a local minima.
+ * A node is a local maxima if its value is strictly greater than the previous and next nodes.
+ * A node is a local minima if its value is strictly smaller than the previous and next nodes.
+Given a linked list head, return an array [minDistance, maxDistance]. If there are fewer than two critical points, return [-1, -1].
+Pattern & Intuition
+ * Pattern: Fixed-Size Sliding Window (Triplet Traversal) + Single-Pass Greedy Tracking.
+ * Triplet Window: Traverse using three nodes (prev, curr, curr.next) to identify whether curr is a peak or valley.
+ * Min Distance: Always occurs between two adjacent critical points. Track the previous critical point index to compute min(min_dist, curr_idx - prev_idx).
+ * Max Distance: Always spans the first and the last critical point (last_idx - first_idx).
+Implementation (Python 3)
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+
+class Solution:
+    def nodesBetweenCriticalPoints(self, head: Optional[ListNode]) -> List[int]:
+        if not head or not head.next or not head.next.next:
+            return [-1, -1]
+        
+        first_cp = -1
+        prev_cp = -1
+        min_dist = float('inf')
+        
+        prev = head
+        curr = head.next
+        idx = 1
+        
+        while curr.next:
+            # Check if current node is a local maxima or minima
+            is_critical = (curr.val > prev.val and curr.val > curr.next.val) or \
+                          (curr.val < prev.val and curr.val < curr.next.val)
+            
+            if is_critical:
+                if first_cp == -1:
+                    first_cp = idx
+                else:
+                    min_dist = min(min_dist, idx - prev_cp)
+                prev_cp = idx
+            
+            prev = curr
+            curr = curr.next
+            idx += 1
+            
+        # If fewer than 2 critical points were found
+        if first_cp == -1 or prev_cp == first_cp:
+            return [-1, -1]
+        
+        max_dist = prev_cp - first_cp
+        return [min_dist, max_dist]
+
+Complexity Analysis
+| Metric | Complexity | Description |
+|---|---|---|
+| Time Complexity | O(N) | Single traversal over the linked list of N nodes. |
+| Space Complexity | O(1) | Uses a fixed number of pointer and index variables without extra memory. |
