@@ -1,0 +1,35 @@
+This problem is a classic variation of the Shortest Path with State Representation pattern, combining Breadth-First Search (BFS) with Bitmasking and State Pruning.
+Core Idea: State Expansion
+In standard BFS (e.g., shortest path in a maze), visiting a cell (r, c) once is sufficient because all moves carry equal weight. However, when the problem requires collecting multiple items or managing a dynamic resource, the definition of a "visited state" must expand beyond just grid coordinates.
+A complete state is defined by a tuple:
+Key Components of the Pattern
+ * Bitmask for Subset Tracking:
+   Since the order of collecting items does not matter, an integer bitmask represents the subset of collected litter.
+   * If litter i is collected, the i-th bit is set: mask | (1 << i).
+   * The goal is reached when mask == (1 << total_litters) - 1.
+ * Resource Reset Mechanics:
+   Cells marked with 'R' act as state-modifiers. Entering an 'R' cell instantly resets the energy variable back to capacity, allowing the search to proceed without getting trapped by distance constraints.
+ * State Pruning (Dominance Check):
+   Instead of a simple boolean visited[r][c][mask], we store the maximum remaining energy seen so far for (r, c, mask):
+   if next_energy > max_energy.get((nr, nc, next_mask), -1):
+    max_energy[(nr, nc, next_mask)] = next_energy
+    queue.append((nr, nc, next_energy, next_mask))
+
+  If you arrive at the exact same cell with the exact same set of collected items but with *equal or less energy* than a previous path, that branch can never produce a strictly better outcome and is pruned immediately.
+
+---
+
+### When to Recognize and Apply This Pattern
+
+* **Target items $\le 15$:** Whenever a problem asks to visit or collect a small number of items scattered across a grid/graph, a bitmask of size $2^K$ is the standard indicator.
+* **Consumable Resources / Resets:** When movement requires a depletable resource (like battery, steps, or fuel) that can be replenished at specific stations.
+* **Unweighted Shortest Path:** When all edge/step costs are uniform ($1$ move), BFS guarantees that the first time the complete target mask is reached, it uses the minimum possible steps.
+
+---
+
+### Similar LeetCode Problems
+
+* **864. Shortest Path to Get All Keys** — BFS + Bitmask for tracking collected keys to unlock doors.
+* **847. Shortest Path Visiting All Nodes** — BFS + Bitmask on general graphs to visit every node.
+* **1293. Shortest Path in a Grid with Obstacles Elimination** — BFS + tracking remaining obstacle elimination quota as part of the state.
+
