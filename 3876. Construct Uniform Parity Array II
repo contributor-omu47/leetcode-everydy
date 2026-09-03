@@ -1,0 +1,22 @@
+
+Pattern Used
+
+**Greedy + Parity Observation**
+
+### Approach
+
+1. Find the **smallest odd number** in the array.
+2. If there is no odd number, all elements are already even, so return `True`.
+3. To make the entire array **odd**, every even number must subtract an odd number.
+4. Using the **smallest odd number** is always the best choice because it gives the highest chance that the subtraction remains positive.
+5. If any even number is smaller than or equal to the smallest odd number, it cannot be converted to odd.
+6. Therefore, return `True` if every even number is greater than the smallest odd number; otherwise return `False`.
+
+### Complexity
+
+* **Time:** `O(n)`
+* **Space:** `O(1)`
+
+### Pattern to remember
+
+> **When a problem involves changing parity through subtraction, first analyze how subtraction affects parity, then use the smallest valid element greedily.**
